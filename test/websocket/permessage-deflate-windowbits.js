@@ -1,5 +1,6 @@
 'use strict'
 
+const assert = require('node:assert')
 const { describe, test, after } = require('node:test')
 const { once } = require('node:events')
 const http = require('node:http')
@@ -107,33 +108,33 @@ async function afterOpenWaitUntilClosing (client, timeoutMs = 10000) {
 
 describe('isValidClientWindowBits', () => {
   test('rejects empty string', (t) => {
-    t.assert.strictEqual(isValidClientWindowBits(''), false)
+    assert.strictEqual(isValidClientWindowBits(''), false)
   })
 
   test('rejects values below 8', (t) => {
-    t.assert.strictEqual(isValidClientWindowBits('0'), false)
-    t.assert.strictEqual(isValidClientWindowBits('1'), false)
-    t.assert.strictEqual(isValidClientWindowBits('7'), false)
+    assert.strictEqual(isValidClientWindowBits('0'), false)
+    assert.strictEqual(isValidClientWindowBits('1'), false)
+    assert.strictEqual(isValidClientWindowBits('7'), false)
   })
 
   test('accepts values 8-15', (t) => {
     for (let i = 8; i <= 15; i++) {
-      t.assert.strictEqual(isValidClientWindowBits(String(i)), true, `${i} should be valid`)
+      assert.strictEqual(isValidClientWindowBits(String(i)), true, `${i} should be valid`)
     }
   })
 
   test('rejects values above 15', (t) => {
-    t.assert.strictEqual(isValidClientWindowBits('16'), false)
-    t.assert.strictEqual(isValidClientWindowBits('100'), false)
-    t.assert.strictEqual(isValidClientWindowBits('1000'), false)
-    t.assert.strictEqual(isValidClientWindowBits('999999'), false)
+    assert.strictEqual(isValidClientWindowBits('16'), false)
+    assert.strictEqual(isValidClientWindowBits('100'), false)
+    assert.strictEqual(isValidClientWindowBits('1000'), false)
+    assert.strictEqual(isValidClientWindowBits('999999'), false)
   })
 
   test('rejects non-numeric values', (t) => {
-    t.assert.strictEqual(isValidClientWindowBits('abc'), false)
-    t.assert.strictEqual(isValidClientWindowBits('12a'), false)
-    t.assert.strictEqual(isValidClientWindowBits('-1'), false)
-    t.assert.strictEqual(isValidClientWindowBits('8.5'), false)
+    assert.strictEqual(isValidClientWindowBits('abc'), false)
+    assert.strictEqual(isValidClientWindowBits('12a'), false)
+    assert.strictEqual(isValidClientWindowBits('-1'), false)
+    assert.strictEqual(isValidClientWindowBits('8.5'), false)
   })
 })
 
@@ -146,7 +147,7 @@ describe('permessage-deflate server_max_window_bits', () => {
     const client = new WebSocket(`ws://127.0.0.1:${server.address().port}`)
 
     const [event] = await once(client, 'message')
-    t.assert.ok(event.data)
+    assert.ok(event.data)
     client.close()
   })
 
@@ -158,7 +159,7 @@ describe('permessage-deflate server_max_window_bits', () => {
     const client = new WebSocket(`ws://127.0.0.1:${server.address().port}`)
 
     const [event] = await once(client, 'message')
-    t.assert.ok(event.data)
+    assert.ok(event.data)
     client.close()
   })
 
@@ -170,7 +171,7 @@ describe('permessage-deflate server_max_window_bits', () => {
     const client = new WebSocket(`ws://127.0.0.1:${server.address().port}`)
 
     await afterOpenWaitUntilClosing(client)
-    t.assert.ok(client.readyState === WebSocket.CLOSING || client.readyState === WebSocket.CLOSED)
+    assert.ok(client.readyState === WebSocket.CLOSING || client.readyState === WebSocket.CLOSED)
   })
 
   test('server_max_window_bits=7 is rejected gracefully', async (t) => {
@@ -181,7 +182,7 @@ describe('permessage-deflate server_max_window_bits', () => {
     const client = new WebSocket(`ws://127.0.0.1:${server.address().port}`)
 
     await afterOpenWaitUntilClosing(client)
-    t.assert.ok(client.readyState === WebSocket.CLOSING || client.readyState === WebSocket.CLOSED)
+    assert.ok(client.readyState === WebSocket.CLOSING || client.readyState === WebSocket.CLOSED)
   })
 
   test('server_max_window_bits=16 is rejected gracefully', async (t) => {
@@ -192,7 +193,7 @@ describe('permessage-deflate server_max_window_bits', () => {
     const client = new WebSocket(`ws://127.0.0.1:${server.address().port}`)
 
     await afterOpenWaitUntilClosing(client)
-    t.assert.ok(client.readyState === WebSocket.CLOSING || client.readyState === WebSocket.CLOSED)
+    assert.ok(client.readyState === WebSocket.CLOSING || client.readyState === WebSocket.CLOSED)
   })
 
   test('server_max_window_bits=1000 is rejected gracefully (PoC attack)', async (t) => {
@@ -203,7 +204,7 @@ describe('permessage-deflate server_max_window_bits', () => {
     const client = new WebSocket(`ws://127.0.0.1:${server.address().port}`)
 
     await afterOpenWaitUntilClosing(client)
-    t.assert.ok(client.readyState === WebSocket.CLOSING || client.readyState === WebSocket.CLOSED)
+    assert.ok(client.readyState === WebSocket.CLOSING || client.readyState === WebSocket.CLOSED)
   })
 
   test('no uncaught exception with invalid windowBits', async (t) => {
@@ -225,7 +226,7 @@ describe('permessage-deflate server_max_window_bits', () => {
 
     await afterOpenWaitUntilClosing(client)
 
-    t.assert.strictEqual(uncaughtException, false, 'No uncaught exception should occur')
+    assert.strictEqual(uncaughtException, false, 'No uncaught exception should occur')
   })
 
   test('invalid windowBits closes connection without crashing process', async (t) => {
@@ -236,6 +237,6 @@ describe('permessage-deflate server_max_window_bits', () => {
     const client = new WebSocket(`ws://127.0.0.1:${server.address().port}`)
 
     await afterOpenWaitUntilClosing(client)
-    t.assert.ok(client.readyState === WebSocket.CLOSING || client.readyState === WebSocket.CLOSED)
+    assert.ok(client.readyState === WebSocket.CLOSING || client.readyState === WebSocket.CLOSED)
   })
 })
